@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Workbench - Empty</title>
+
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
+	<script type="text/javascript" src="./libs/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="./libs/lodash.js"></script>
+	<script type="text/javascript" src="./libs/vis-charting.js"></script>
+
+	<script type="text/javascript" src="./config.js"></script>
+	<script type="text/javascript" src="./data/data.js"></script>
+	<script type="text/javascript" src="./js/script.js"></script>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+	<div id="control-buttons">
+		<button onClick="drawVisualization()">Draw Visualization</button>
+		<button onClick="fireRandomFilterEvent()">Fire Random Filter Event</button>
+		<button onClick="clearFilter()">Clear Filter</button>
+		<button onClick="fireRandomBrushEvent()">Fire Random Brush Event</button>
+		<button onClick="clearBrush()">Clear Brush</button>
+		<button onClick="drawSecondVisualization()">Draw Second Visualization</button>
+		<div id="size-container">width: <input id="vis-width" type="number"> height: <input id="vis-height" type="number">  <button onclick="setSize();">Set Size</button></div>
+	</div>
+	<div id="visualization-space">
+		<iframe id="visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+
+		<iframe id="second-visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+	</div>
+	<input id="fileSelect" type="file" accept=".csv" /> 
+	<div id="myDiv"></div>
+	<script type="text/javascript">
+		$(function() {
+			$("#fileSelect").change(function (){
+				var files = document.getElementById("fileSelect").files;
+				let reader = new FileReader();
+				reader.readAsText(files[0]);
+				reader.onload = (event) => {
+					let csvData = event.target.result;
+					try {
+						console.log(csvData);
+					} catch (e) {
+						console.log("error!");
+					}
+					$('#fileSelect').val(null);
+				};
+			});
+		});
+
+		Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
+
+		function unpack(rows, key) {
+		return rows.map(function(row) { return row[key]; });
+		}
+
+
+		var trace1 = {
+		type: "scatter",
+		mode: "lines",
+		name: 'AAPL High',
+		x: unpack(rows, 'Date'),
+		y: unpack(rows, 'AAPL.High'),
+		line: {color: '#17BECF'}
+		}
+
+		var trace2 = {
+		type: "scatter",
+		mode: "lines",
+		name: 'AAPL Low',
+		x: unpack(rows, 'Date'),
+		y: unpack(rows, 'AAPL.Low'),
+		line: {color: '#7F7F7F'}
+		}
+
+		var data = [trace1,trace2];
+
+		var layout = {
+		title: 'Basic Time Series',
+		};
+
+		Plotly.newPlot('myDiv', data, layout);
+		})
+	</script>
+</body>
+</html>
