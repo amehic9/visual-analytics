@@ -1,3 +1,7 @@
+var ma_band = [];
+var lo_band = [];
+var hi_band = [];
+
 // When clicking on Download Visualization this function is called to apply all additional
 // transformations on the svg before the visualization is downloaded
 // All of the styles should be applied inline to the svg elements
@@ -34,12 +38,20 @@ applyFilter = function(filteredDatarows) {
 //                          column is, etc.
 // @param visIndex - the index or ID of the visualization. Only needed for brushing
 drawVisualization = function (datarows, channelMappings, visIndex) {
+
     /*REGISTRATION TO THE BRUSHING OBSERVER*/
     /* DO NOT REMOVE */
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
 
+    Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
+        
+        function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+        }
 
-    // TODO: Add your visualization code here
+
+
+        // TODO: Add your visualization code here
 
     xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
     yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
@@ -55,133 +67,77 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
     //var n = 20; // n-period of moving average
     //var k = 2; // k times n-period standard deviation above/below moving average
-    var n = 2;
+    var n = 20;
     var k = 2;
 
     var parseDate = d3.time.format("%m/%d/%Y").parse;
 
-    var x = d3.time.scale()
-      .range([0, width]);
-    var y = d3.scale.linear()
-      .range([height, 0]);
-    var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
-    var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left")
-      .tickSize(3, 0);
-    var line = d3.svg.line()
-      .x(function (d) {
-          return x(d.date);
-      })
-      .y(function (d) {
-          return y(d.close);
-      });
-    var ma = d3.svg.line()
-      .x(function (d) {
-          return x(d.date);
-      })
-      .y(function (d) {
-          return y(d.ma);
-      });
-    var lowBand = d3.svg.line()
-      .x(function (d) {
-          return x(d.date);
-      })
-      .y(function (d) {
-          return y(d.low);
-      });
-    var highBand = d3.svg.line()
-      .x(function (d) {
-          return x(d.date);
-      })
-      .y(function (d) {
-          return y(d.high);
-      });
-    var bandsArea = d3.svg.area()
-      .x(function (d) {
-          return x(d.date);
-      })
-      .y0(function (d) {
-          return y(d.low);
-      })
-      .y1(function (d) {
-          return y(d.high);
-      });
+    console.log(rows);
 
-    x.domain(datarows.map(function (d) {
-        return d[xIndex];
-    }));
-    y.domain([0, d3.max(datarows, function (d) {
-        return d[yIndex];
-    })]);
-
-    console.log(datarows);
-
-    var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    datarows.forEach(function (d) {
+    /*rows.forEach(function (d) {
         d.date = parseDate(d[0]);
         d.close = parseInt(d[1]);
-    });
-    console.log(datarows);
-
-    var ma_band = [];
-    var lo_band = [];
-    var hi_band = [];
+    });*/
+    //console.log(datarows);
 
     //var bandsData = getBollingerBands(n, k, datarows);
-    getBollingerBands(n, k, datarows);
+    getBollingerBands(n, k, rows);
     console.log("ajdkfhjkashdfklashjdflkahs");
     console.log(ma_band);
     console.log(lo_band);
     console.log(hi_band);
 
-    x.domain(d3.extent(datarows, function (d) {
-        return d.date;
-    }));
-    y.domain([d3.min(bandsData, function (d) {
-        return d.low;
-    }),
-        d3.max(bandsData, function (d) {
-            return d.high;
-        })
-    ]);
 
-    svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-    svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
 
-    svg.append("path")
-      .datum(bandsData)
-      .attr("class", "area bands")
-      .attr("d", bandsArea);
-    svg.append("path")
-      .datum(bandsData)
-      .attr("class", "line bands")
-      .attr("d", lowBand);
-    svg.append("path")
-      .datum(bandsData)
-      .attr("class", "line bands")
-      .attr("d", highBand);
-    svg.append("path")
-      .datum(bandsData)
-      .attr("class", "line ma bands")
-      .attr("d", ma);
 
-    svg.append("path")
-      .datum(datarows)
-      .attr("class", "line")
-      .attr("d", line);
+        var trace1 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'exchange rate',
+            x: unpack(rows, 'date'),
+            y: unpack(rows, 'close'),
+            line: {color: '#17BECF'}
+        }
+
+        var trace2 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'mean',
+            x: unpack(ma_band, 'date'),
+            y: unpack(ma_band, 'close'),
+            line: {color: 'red'}
+        }
+
+        var trace3 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'low',
+            x: unpack(lo_band, 'date'),
+            y: unpack(lo_band, 'close'),
+            line: {color: 'blue'}
+        }
+
+        var trace4 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'high',
+            x: unpack(hi_band, 'date'),
+            y: unpack(hi_band, 'close'),
+            line: {color: 'yellow'}
+        }
+
+        var data = [trace1, trace2, trace3, trace4];
+
+        var layout = {
+        title: 'Euro-dolar exchange rate',
+        };
+
+        var elem = document.createElement('div');
+        elem.setAttribute("id", "myDiv");
+        document.body.appendChild(elem);
+        
+        Plotly.newPlot('myDiv', data, layout);
+    })
 
 
     function getBollingerBands(n, k, data) {
@@ -191,38 +147,26 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             var mean = d3.mean(slice, function (d) {
                 return d.close;
             });
+
             var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
                 return Math.pow(d.close - mean, 2);
             })));
-            /*bands.push({
-                date: data[i].date,
-                ma: mean,
-                low: mean - (k * stdDev),
-                high: mean + (k * stdDev)
-            });*/
 
             ma_band.push({
                 date: data[i].date,
-                ma: mean
+                close: mean
             });
 
             lo_band.push({
                 date: data[i].date,
-                low: mean - (k * stdDev)
+                close: mean - (k * stdDev)
             });
 
 
             hi_band.push({
                 date: data[i].date,
-                high: mean + (k * stdDev)
+                close: mean + (k * stdDev)
             });
-
-            /*bands.push({
-                ma: ma_band,
-                lo: lo_band,
-                hi:hi_band
-            });
-            return bands;*/
         }
     }
 }

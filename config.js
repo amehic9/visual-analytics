@@ -1,6 +1,6 @@
 var visConfig = {
     // Add all of your libraries from the libs folder here. The visualizerChartApi entry should NOT be removed
-    libs : ["visualizerChartApi.js", "d3.v3.min.js"],
+    libs : ["visualizerChartApi.js", "d3.v3.min.js", "plotly-latest.min.js"],
 
     // Add all your css files from your css folder here
     css : [],
