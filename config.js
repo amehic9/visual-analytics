@@ -1,6 +1,6 @@
 var visConfig = {
     // Add all of your libraries from the libs folder here. The visualizerChartApi entry should NOT be removed
-    libs : ["visualizerChartApi.js"],
+    libs : ["visualizerChartApi.js", "d3.v3.min.js"],
 
     // Add all your css files from your css folder here
     css : [],
@@ -13,12 +13,12 @@ var visConfig = {
     // The channelname is defined by you and can be used to identify where a certain field should be mapped to
     fieldToChannelMap : [
         {
-            "field" : "city",
-            "channel" : "x-Axis"
+            "field" : "date",
+            "channel" : "x-axis"
         },
         {
-            "field" : "price",
-            "channel" : "y-Axis"
+            "field" : "value",
+            "channel" : "y-axis"
         }
     ]
 };

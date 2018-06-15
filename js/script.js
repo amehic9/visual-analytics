@@ -13,6 +13,7 @@ $(document).ready(function(){
     });
 });
 
+
 function drawVisualization() {
     initIframe("visualization-iframe", 1);
 }
@@ -51,31 +52,31 @@ function initIframe(iframeId, visIndex){
     iframe.contentWindow.document.open('text/html', 'replace');
     iframe.contentWindow.document.write(iframeContent);
     iframe.contentWindow.document.close();
-    
+
     let indexes = [];
     visConfig.fieldToChannelMap.forEach( entry => {
-       indexes.push(getIndexOfFieldByName(entry.field));
+        indexes.push(getIndexOfFieldByName(entry.field));
     });
 
     let datarows = data.content.map( row => {
-       let subsetOfRow = [];
-       indexes.forEach( index => {
-           if(data.types[index] === "number")
-               subsetOfRow.push(+row[index]);
-           else
-               subsetOfRow.push(row[index]);
-       });
-       return subsetOfRow;
+        let subsetOfRow = [];
+        indexes.forEach( index => {
+            if(data.types[index] === "number")
+                subsetOfRow.push(+row[index]);
+            else
+                subsetOfRow.push(row[index]);
+        });
+        return subsetOfRow;
     });
 
     let mapping = [];
     visConfig.fieldToChannelMap.forEach( entry => {
-       mapping.push({
-           "aggregation" : "",
-           "label" : entry.field,
-           "datatype" : data.types[getIndexOfFieldByName(entry.field)],
-           "channel" : entry.channel
-       })
+        mapping.push({
+            "aggregation" : "",
+            "label" : entry.field,
+            "datatype" : data.types[getIndexOfFieldByName(entry.field)],
+            "channel" : entry.channel
+        })
     });
 
     if(iframe.contentWindow.showVisualization) {
