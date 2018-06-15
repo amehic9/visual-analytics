@@ -12,6 +12,37 @@
 	<script type="text/javascript" src="./data/data.js"></script>
 	<script type="text/javascript" src="./js/script.js"></script>
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+	<style>
+		body {
+  font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #999;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+.line.bands {
+  stroke: #6c949f;
+  stroke-opacity: 0.6;
+}
+
+.area.bands {
+  fill: #6c949f;
+  fill-opacity: 0.3;
+  stroke: none;
+}
+
+	</style>
 	<script src="http://d3js.org/d3.v3.js"></script>
 </head>
 <body>
@@ -31,37 +62,21 @@
 	</div>
 	<input id="fileSelect" type="file" accept=".csv" /> 
 	<div id="myDiv"></div>
+	<script src="http://d3js.org/d3.v3.js"></script>
 	<script type="text/javascript">
-		$(function() {
-			$("#fileSelect").change(function (){
-				var files = document.getElementById("fileSelect").files;
-				let reader = new FileReader();
-				reader.readAsText(files[0]);
-				reader.onload = (event) => {
-					let csvData = event.target.result;
-					try {
-						console.log(csvData);
-					} catch (e) {
-						console.log("error!");
-					}
-					$('#fileSelect').val(null);
-				};
-			});
-		});
 
-		Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
+		Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
 
 		function unpack(rows, key) {
 		return rows.map(function(row) { return row[key]; });
 		}
 
-
 		var trace1 = {
 		type: "scatter",
 		mode: "lines",
 		name: 'AAPL High',
-		x: unpack(rows, 'Date'),
-		y: unpack(rows, 'AAPL.High'),
+		x: unpack(rows, 'DATE'),
+		y: unpack(rows, 'DEXUSEU'),
 		line: {color: '#17BECF'}
 		}
 
@@ -69,19 +84,20 @@
 		type: "scatter",
 		mode: "lines",
 		name: 'AAPL Low',
-		x: unpack(rows, 'Date'),
-		y: unpack(rows, 'AAPL.Low'),
+		x: unpack(rows, 'DATE'),
+		y: unpack(rows, 'DEXUSEU'),
 		line: {color: '#7F7F7F'}
 		}
 
-		var data = [trace1,trace2];
+		var data = [trace1];
 
 		var layout = {
-		title: 'Basic Time Series',
+		title: 'Euro-dolar exchange rate',
 		};
 
 		Plotly.newPlot('myDiv', data, layout);
 		})
+		
 	</script>
 
 </body>
