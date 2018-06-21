@@ -15,32 +15,32 @@
 
 	<style>
 		body {
-  font: 12px sans-serif;
-}
+			font: 12px sans-serif;
+		}
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #999;
-  shape-rendering: crispEdges;
-}
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: #999;
+			shape-rendering: crispEdges;
+		}
 
-.line {
-  fill: none;
-  stroke: black;
-  stroke-width: 1.5px;
-}
+		.line {
+			fill: none;
+			stroke: black;
+			stroke-width: 1.5px;
+		}
 
-.line.bands {
-  stroke: #6c949f;
-  stroke-opacity: 0.6;
-}
+		.line.bands {
+			stroke: #6c949f;
+			stroke-opacity: 0.6;
+		}
 
-.area.bands {
-  fill: #6c949f;
-  fill-opacity: 0.3;
-  stroke: none;
-}
+		.area.bands {
+			fill: #6c949f;
+			fill-opacity: 0.3;
+			stroke: none;
+		}
 
 	</style>
 	<style>
@@ -82,94 +82,54 @@
 	<script src="http://d3js.org/d3.v3.js"></script>
 </head>
 <body>
-	<div id="control-buttons">
-		<button onClick="drawVisualization();drawSecondVisualization()">Draw Visualization</button>
-		<button onClick="fireRandomFilterEvent()">Fire Random Filter Event</button>
-		<button onClick="clearFilter()">Clear Filter</button>
-		<button onClick="fireRandomBrushEvent()">Fire Random Brush Event</button>
-		<button onClick="clearBrush()">Clear Brush</button>
-		<button onClick="drawSecondVisualization()">Draw Second Visualization</button>
-		<div id="size-container">width: <input id="vis-width" type="number"> height: <input id="vis-height" type="number">  <button onclick="setSize();">Set Size</button></div>
-	</div>
-	<!--<div class="slidecontainer">-->
-	<div id="slidwindow">
-		<p>Size of Sliding Window: <span id="slid"></span></p>
-		<input type="range" min="1" max="100" value="50" id="slidingwindow_rng">
-	</div>
-	<div id="slidthresh">
-		<p>Threshold: <span id="thresh"></span></p>
-		<input type="range" min="1" max="100" value="50" id="threshold_rng">
-	</div>
+<div id="control-buttons">
+	<button onClick="drawVisualization();drawSecondVisualization()">Draw Visualization</button>
+	<!--<button onClick="drawVisualization()">Draw Visualization</button>-->
+	<button onClick="fireRandomFilterEvent()">Fire Random Filter Event</button>
+	<button onClick="clearFilter()">Clear Filter</button>
+	<button onClick="fireRandomBrushEvent()">Fire Random Brush Event</button>
+	<button onClick="clearBrush()">Clear Brush</button>
+	<button onClick="drawSecondVisualization()">Draw Second Visualization</button>
+	<div id="size-container">width: <input id="vis-width" type="number"> height: <input id="vis-height" type="number">  <button onclick="setSize();">Set Size</button></div>
+</div>
+<!--<div class="slidecontainer">-->
+<div id="slidwindow">
+	<p>Size of Sliding Window: <span id="slid"></span></p>
+	<input type="range" min="1" max="100" value="50" id="slidingwindow_rng">
+</div>
+<div id="slidthresh">
+	<p>Threshold: <span id="thresh"></span></p>
+	<input type="range" min="1" max="100" value="50" id="threshold_rng">
+</div>
 
-	<div id="visualization-space">
-		<iframe id="visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+<div id="visualization-space">
+	<iframe id="visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+	<iframe id="second-visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+</div>
+<input id="fileSelect" type="file" accept=".csv" />
+<script src="http://d3js.org/d3.v3.js"></script>
 
-		<iframe id="second-visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
-	</div>
-	<input id="fileSelect" type="file" accept=".csv" /> 
-	<div id="myDiv"></div>
-	<script src="http://d3js.org/d3.v3.js"></script>
+<script>
+	var slidwindow = document.getElementById("slidingwindow_rng");
+	var out_slid = document.getElementById("slid");
+	var slidthresh = document.getElementById("threshold_rng");
+	var out_thresh = document.getElementById("thresh");
 
-	<script>
-		var slidwindow = document.getElementById("slidingwindow_rng");
-		var out_slid = document.getElementById("slid");
-		var slidthresh = document.getElementById("threshold_rng");
-		var out_thresh = document.getElementById("thresh");
+	out_slid.innerHTML = slidwindow.value;
+	out_thresh.innerHTML = slidthresh.value;
 
-		out_slid.innerHTML = slidwindow.value;
-		out_thresh.innerHTML = slidthresh.value;
-
-		slidwindow.oninput = function() {
-			out_slid.innerHTML = this.value;
-			console.log(this.value);
-			drawVisualization();
-			drawSecondVisualization()
-		};
-		slidthresh.oninput = function() {
-			out_thresh.innerHTML = this.value;
-		  console.log(this.value);
-			drawVisualization();
-			drawSecondVisualization()
-		};
-	</script>
-
-
-	<script type="text/javascript">
-
-		/*Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
-
-		function unpack(rows, key) {
-		return rows.map(function(row) { return row[key]; });
-		}
-
-		var trace1 = {
-		type: "scatter",
-		mode: "lines",
-		name: 'AAPL High',
-		x: unpack(rows, 'DATE'),
-		y: unpack(rows, 'DEXUSEU'),
-		line: {color: '#17BECF'}
-		}
-
-		var trace2 = {
-		type: "scatter",
-		mode: "lines",
-		name: 'AAPL Low',
-		x: unpack(rows, 'DATE'),
-		y: unpack(rows, 'DEXUSEU'),
-		line: {color: '#7F7F7F'}
-		}
-
-		var data = [trace1];
-
-		var layout = {
-		title: 'Euro-dolar exchange rate',
-		};
-
-		Plotly.newPlot('myDiv', data, layout);
-		})*/
-		
-	</script>
-
+	slidwindow.oninput = function() {
+		out_slid.innerHTML = this.value;
+		console.log(this.value);
+		drawVisualization();
+		drawSecondVisualization()
+	};
+	slidthresh.oninput = function() {
+		out_thresh.innerHTML = this.value;
+		console.log(this.value);
+		drawVisualization();
+		drawSecondVisualization()
+	};
+</script>
 </body>
 </html>
