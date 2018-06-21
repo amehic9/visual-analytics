@@ -196,4 +196,3 @@ function setSize() {
     $iframe.height($("#vis-height").val());
     initIframe("visualization-iframe");
 }
-

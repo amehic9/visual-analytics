@@ -1,7 +1,8 @@
 var ma_band = [];
 var lo_band = [];
 var hi_band = [];
-var elem = document.createElement('div');
+var elem1 = document.createElement('div1');
+var elem2 = document.createElement('div2');
 var first_plot = 1;
 
 // When clicking on Download Visualization this function is called to apply all additional
@@ -47,7 +48,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         console.log("hello");
     }), 3000;*/
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
-    console.log(document.getElementById("control-buttons"));
 
 
     Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
@@ -85,7 +85,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         d.date = parseDate(d[0]);
         d.close = parseInt(d[1]);
     });*/
-    //console.log(datarows);
 
     //var bandsData = getBollingerBands(n, k, datarows);
     getBollingerBands(n, k, rows);
@@ -135,23 +134,76 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         var layout = {
         title: 'Euro-dollar exchange rate',
         };
-
         if(first_plot == 1){
-            elem.setAttribute("id", "myDiv");
-            document.body.appendChild(elem);
-            Plotly.newPlot('myDiv', data, layout);
-            first_plot = 0;
-            console.log("first plot")
+            if(visIndex == 1) {
+                elem1.setAttribute("id", "myDiv1");
+                //elem2.setAttribute("id", "myDiv2");
+                document.body.appendChild(elem1);
+                //document.body.appendChild(elem2);
+                Plotly.newPlot('myDiv1', data, layout);
+                first_plot = 0;
+
+            }
+            else {
+                elem2.setAttribute("id", "myDiv2");
+                document.body.appendChild(elem2);
+                Plotly.newPlot('myDiv2', data, layout);
+                first_plot = 0;
+            }
         }
         else{
-            Plotly.update('myDiv', data, layout);
+            Plotly.update('myDiv1', data, layout);
             console.log("not first plot")
+
+            //Plotly.update('myDiv2', data, layout);
         }
-        graphDiv = document.getElementById("myDiv");
-        console.log(graphDiv);
-        graphDiv.on('plotly_relayout', function(eventData) {
-            console.log(eventData)
+
+        if(visIndex == 1){
+            graphDiv = document.getElementById("myDiv1");
+            graphDiv.on('plotly_relayout', function(eventData) {
+                var begin = eventData['xaxis.range[0]'];
+                var begin_t = begin.split(" ")[0];
+                var end = eventData['xaxis.range[1]'];
+                var end_t = end.split(" ")[0];
+
+                console.log(begin_t)
+                console.log(end_t)
+
+                var value = begin.split(" ")[1].split(":")[2];
+                layout = {
+                    xaxis: {
+                        range: [begin_t, end_t],
+                        type: 'date'
+                    }
+                }
+                Plotly.update('myDiv2', data, layout);
             });
+        }
+        else {
+            graphDiv = document.getElementById("myDiv2");
+        }
+
+        /*console.log(graphDiv);
+        graphDiv.on('plotly_relayout', function(eventData) {
+            //console.log(eventData)
+            console.log(eventData['xaxis.range[0]'])
+            var begin = eventData['xaxis.range[0]'];
+            var begin_t = begin.split(" ")[0];
+            var end = eventData['xaxis.range[1]'];
+            var end_t = end.split(" ")[0];
+
+            console.log(begin_t)
+            console.log(end_t)
+
+            var value = begin.split(" ")[1].split(":")[2];
+            layout = {
+                xaxis: {
+                    range: [begin_t, end_t],
+                    type: 'date'
+                }
+            }
+            Plotly.update('myDiv2', data, layout);
+            });*/
 
         //var elem = document.createElement('div');
         //elem.setAttribute("id", "myDiv");
