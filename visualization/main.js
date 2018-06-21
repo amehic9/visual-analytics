@@ -2,6 +2,8 @@ var ma_band = [];
 var lo_band = [];
 var hi_band = [];
 var data;
+var layout;
+var firstPlots = true;
 
 // When clicking on Download Visualization this function is called to apply all additional
 // transformations on the svg before the visualization is downloaded
@@ -55,7 +57,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     /*setTimeout(function() {
      console.log("hello");
      }), 3000;*/
-    console.log("sadfasdfasf")
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
     var window_slider = window.parent.document.getElementById("slidingwindow_rng");
     var threshold_slider = window.parent.document.getElementById("threshold_rng");
@@ -114,32 +115,44 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         };
 
         data = [trace1, trace2, trace3, trace4];
+        if(firstPlots){
+            console.log(firstPlots);
+            if(visIndex == 1){
+                var elem1 = document.createElement('myDiv1');
+                elem1.setAttribute("id", "myDiv1");
+                document.body.appendChild(elem1);
+                var simple_layout = {
+                    title: 'Euro-dollar exchange rate',
+                };
+                Plotly.newPlot('myDiv1', data, simple_layout);
+            }
+            else{
+                console.log(firstPlots)
+                var elem2 = document.createElement('myDiv2');
+                elem2.setAttribute("id", "myDiv2");
+                document.body.appendChild(elem2);
+                var fixed_layout = {
+                    title: 'Euro-dollar exchange rate',
+                    xaxis: {
+                        fixedrange: true
+                    },
+                    yaxis: {
+                        fixedrange: true
+                    }
+                 };
+                 Plotly.newPlot('myDiv2', data, fixed_layout);
+            }
 
-        if(visIndex == 1){
-            //var frame1 = document.getElementById("visualization-iframe");
-            var elem1 = document.createElement('myDiv1');
-            elem1.setAttribute("id", "myDiv1");
-            document.body.appendChild(elem1);
-            var layout = {
-                title: 'Euro-dollar exchange rate',
-            };
-            Plotly.newPlot('myDiv1', data, layout);
         }
-        else {
-            //var frame2 = document.getElementById("second-visualization-iframe");
-            var elem2 = document.createElement('myDiv2');
-            elem2.setAttribute("id", "myDiv2");
-            document.body.appendChild(elem2);
-            var fixed_layout = {
-                title: 'Euro-dollar exchange rate',
-                xaxis: {
-                    fixedrange: true
-                },
-                yaxis: {
-                    fixedrange: true
-                }
-            };
-            Plotly.newPlot('myDiv2', data, fixed_layout);
+        else{
+            console.log(firstPlots);
+            if(visIndex == 1){
+                Plotly.update('myDiv1', data, layout);
+            }
+            else{
+                //layout["xaxis"]["fixedrange"] = true;
+                Plotly.update('myDiv2', data, layout)
+            }
         }
 
         graphDiv = document.getElementById("myDiv1");
@@ -161,13 +174,18 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                     applyFilter(layout);
                 }
                 else{
-                    if(eventData['xaxis.range[0]']){
+                    var begin_t;
+                    var begin_v;
+                    var end_t;
+                    var end_v;
+                    console.log(eventData);
+                    if(eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']){
                         console.log("select");
-                        var begin_t = eventData['xaxis.range[0]'].split(" ")[0];
-                        var end_t = eventData['xaxis.range[1]'].split(" ")[0];
+                        begin_t = eventData['xaxis.range[0]'].split(" ")[0];
+                        end_t = eventData['xaxis.range[1]'].split(" ")[0];
 
-                        var begin_v = eventData['yaxis.range[0]'];
-                        var end_v = eventData['yaxis.range[1]'];
+                        begin_v = eventData['yaxis.range[0]'];
+                        end_v = eventData['yaxis.range[1]'];
                         layout = {
                             xaxis: {
                                 range: [begin_t, end_t],
@@ -180,6 +198,34 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                         };
                         applyFilter(layout);
                     }
+                    else{
+                        if(eventData['xaxis.range[0]'] && !eventData['yaxis.range[0]']){
+                            console.log("only x");
+                            begin_t = eventData['xaxis.range[0]'].split(" ")[0];
+                            end_t = eventData['xaxis.range[1]'].split(" ")[0];
+
+                            layout = {
+                                xaxis: {
+                                    range: [begin_t, end_t],
+                                    fixedrange: true
+                                }
+                            };
+                            applyFilter(layout);
+                        }
+                        if(!eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']){
+                            console.log("only y");
+                            begin_v = eventData['yaxis.range[0]'];
+                            end_v = eventData['yaxis.range[1]'];
+                            layout = {
+                                yaxis: {
+                                    range: [begin_v, end_v],
+                                    fixedrange: true
+                                }
+                            };
+                            applyFilter(layout);
+                        }
+                    }
+
                 }
             });
         }
