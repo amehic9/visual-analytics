@@ -197,4 +197,3 @@ function setSize() {
     initIframe("visualization-iframe");
 }
 
-

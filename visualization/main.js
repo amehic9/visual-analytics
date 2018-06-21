@@ -1,6 +1,8 @@
 var ma_band = [];
 var lo_band = [];
 var hi_band = [];
+var elem = document.createElement('div');
+var first_plot = 1;
 
 // When clicking on Download Visualization this function is called to apply all additional
 // transformations on the svg before the visualization is downloaded
@@ -41,7 +43,12 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
     /*REGISTRATION TO THE BRUSHING OBSERVER*/
     /* DO NOT REMOVE */
+    /*setTimeout(function() {
+        console.log("hello");
+    }), 3000;*/
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
+    console.log(document.getElementById("control-buttons"));
+
 
     Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
         
@@ -67,12 +74,12 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
     //var n = 20; // n-period of moving average
     //var k = 2; // k times n-period standard deviation above/below moving average
-    var n = 20;
-    var k = 2;
+    var n = 10;
+    var k = 1;
 
     var parseDate = d3.time.format("%m/%d/%Y").parse;
 
-    console.log(rows);
+    //console.log(rows);
 
     /*rows.forEach(function (d) {
         d.date = parseDate(d[0]);
@@ -82,13 +89,10 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
     //var bandsData = getBollingerBands(n, k, datarows);
     getBollingerBands(n, k, rows);
-    console.log("ajdkfhjkashdfklashjdflkahs");
-    console.log(ma_band);
-    console.log(lo_band);
-    console.log(hi_band);
-
-
-
+    //console.log("ajdkfhjkashdfklashjdflkahs");
+    //console.log(ma_band);
+    //console.log(lo_band);
+    //console.log(hi_band);
 
         var trace1 = {
             type: "scatter",
@@ -129,18 +133,53 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         var data = [trace1, trace2, trace3, trace4];
 
         var layout = {
-        title: 'Euro-dolar exchange rate',
+        title: 'Euro-dollar exchange rate',
         };
 
-        var elem = document.createElement('div');
-        elem.setAttribute("id", "myDiv");
-        document.body.appendChild(elem);
+        if(first_plot == 1){
+            elem.setAttribute("id", "myDiv");
+            document.body.appendChild(elem);
+            Plotly.newPlot('myDiv', data, layout);
+            first_plot = 0;
+            console.log("first plot")
+        }
+        else{
+            Plotly.update('myDiv', data, layout);
+            console.log("not first plot")
+        }
+        graphDiv = document.getElementById("myDiv");
+        console.log(graphDiv);
+        graphDiv.on('plotly_relayout', function(eventData) {
+            console.log(eventData)
+            });
+
+        //var elem = document.createElement('div');
+        //elem.setAttribute("id", "myDiv");
+        //document.body.appendChild(elem);
         
-        Plotly.newPlot('myDiv', data, layout);
-    })
+        //Plotly.newPlot('myDiv', data, layout);
+        //Plotly.update("myDiv", data, layout)
+    });
+
+    //var slidwindow = document.getElementById("slidingwindow_rng");
+    //var out_slid = document.getElementById("slid");
+    //var slidthresh = document.getElementById("threshold_rng");
+    //var out_thresh = document.getElementById("thresh");
+
+    //out_slid.innerHTML = slidwindow.value;
+    //out_thresh.innerHTML = slidthresh.value;
+
+    //slidwindow.oninput = function() {
+    //    out_slid.innerHTML = this.value;
+    //    console.log(this.value)
+    //};
+    //slidthresh.oninput = function() {
+    //    out_thresh.innerHTML = this.value;
+    //    console.log(this.value)
+    //};
 
 
-    function getBollingerBands(n, k, data) {
+    /*function getBollingerBands(n, k, data) {
         var bands = []; //{ ma: 0, low: 0, high: 0 }
         for (var i = n - 1, len = data.length; i < len; i++) {
             var slice = data.slice(i + 1 - n, i);
@@ -168,6 +207,38 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 close: mean + (k * stdDev)
             });
         }
+    }*/
+}
+
+getBollingerBands = function(n, k, data) {
+    ma_band = [];
+    lo_band = [];
+    hi_band = [];
+    for (var i = n - 1, len = data.length; i < len; i++) {
+        var slice = data.slice(i + 1 - n, i);
+        var mean = d3.mean(slice, function (d) {
+            return d.close;
+        });
+
+        var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
+            return Math.pow(d.close - mean, 2);
+        })));
+
+        ma_band.push({
+            date: data[i].date,
+            close: mean
+        });
+
+        lo_band.push({
+            date: data[i].date,
+            close: mean - (k * stdDev)
+        });
+
+
+        hi_band.push({
+            date: data[i].date,
+            close: mean + (k * stdDev)
+        });
     }
 }
 
