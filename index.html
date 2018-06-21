@@ -92,14 +92,15 @@
 	<button onClick="drawSecondVisualization()">Draw Second Visualization</button>
 	<div id="size-container">width: <input id="vis-width" type="number"> height: <input id="vis-height" type="number">  <button onclick="setSize();">Set Size</button></div>
 </div>
-<!--<div class="slidecontainer">-->
+
+
 <div id="slidwindow">
 	<p>Size of Sliding Window: <span id="slid"></span></p>
-	<input type="range" min="1" max="100" value="50" id="slidingwindow_rng">
+	<input type="range" min="1" max="100" value="25" id="slidingwindow_rng">
 </div>
 <div id="slidthresh">
 	<p>Threshold: <span id="thresh"></span></p>
-	<input type="range" min="1" max="100" value="50" id="threshold_rng">
+	<input type="range" min="1" max="100" value="5" id="threshold_rng">
 </div>
 
 <div id="visualization-space">
@@ -120,15 +121,9 @@
 
 	slidwindow.oninput = function() {
 		out_slid.innerHTML = this.value;
-		console.log(this.value);
-		drawVisualization();
-		drawSecondVisualization()
 	};
 	slidthresh.oninput = function() {
 		out_thresh.innerHTML = this.value;
-		console.log(this.value);
-		drawVisualization();
-		drawSecondVisualization()
 	};
 </script>
 </body>

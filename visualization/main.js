@@ -55,8 +55,10 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     /*setTimeout(function() {
      console.log("hello");
      }), 3000;*/
+    console.log("sadfasdfasf")
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
-    //console.log(window.parent.frames)
+    var window_slider = window.parent.document.getElementById("slidingwindow_rng");
+    var threshold_slider = window.parent.document.getElementById("threshold_rng");
 
     Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
         function unpack(rows, key) {
@@ -73,9 +75,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             left: 50
         };
 
-        var n = 10;
-        var k = 1;
-        getBollingerBands(n, k, rows);
+        getBollingerBands(window_slider.value, threshold_slider.value, rows);
 
         var trace1 = {
             type: "scatter",
@@ -182,29 +182,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                     }
                 }
             });
-
-            /*graphDiv.on('plotly_doubleclick', function(eventData) {
-             console.log("doubleclick");
-             console.log(eventData['xaxis.range[0]']);
-             console.log(eventData)
-             var begin_t = eventData['xaxis.range[0]'].split(" ")[0];
-             var end_t = eventData['xaxis.range[1]'].split(" ")[0];
-
-             var begin_v = eventData['yaxis.range[0]'];
-             var end_v = eventData['yaxis.range[1]'];
-             layout = {
-             xaxis: {
-             range: [begin_t, end_t],
-             fixedrange: true
-             //type: 'date'
-             },
-             yaxis: {
-             range: [begin_v, end_v],
-             fixedrange: true
-             }
-             };
-             applyFilter(layout);
-             });*/
         }
     });
 };
