@@ -94,7 +94,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 y: unpack(rows, 'close'),
                 //x: x,
                 //y: y,
-                line: {color: '#17BECF'}
+                //line: {color: '#17BECF'},
+                line: {color: 'red'}
             };
 
             var trace2 = {
@@ -112,7 +113,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 name: 'low',
                 x: unpack(lo_band, 'date'),
                 y: unpack(lo_band, 'close'),
-                line: {color: 'blue'}
+                line: {color: 'orange'}
             };
 
             var trace4 = {
@@ -121,10 +122,12 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 name: 'high',
                 x: unpack(hi_band, 'date'),
                 y: unpack(hi_band, 'close'),
-                line: {color: 'yellow'}
+                line: {color: 'orange'},
+                fill:'tonexty'
             };
 
-            data = [trace1, trace2, trace3, trace4];
+            //data = [trace1, trace2, trace3, trace4];
+            data = [trace3, trace4, trace1];
             if (firstPlots) {
                 console.log("asdlfaskjdflöajsdlf")
                 firstPlots = false;
@@ -279,7 +282,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 y: unpack(rows, 'close'),
                 //x: x,
                 //y: y,
-                line: {color: '#17BECF'}
+                //line: {color: '#17BECF'},
+                line: {color: 'red'}
             };
 
             var trace2 = {
@@ -297,7 +301,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 name: 'low',
                 x: unpack(lo_band, 'date'),
                 y: unpack(lo_band, 'close'),
-                line: {color: 'blue'}
+                line: {color: 'orange'}
             };
 
             var trace4 = {
@@ -306,10 +310,12 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 name: 'high',
                 x: unpack(hi_band, 'date'),
                 y: unpack(hi_band, 'close'),
-                line: {color: 'yellow'}
+                line: {color: 'orange'},
+                fill:'tonexty'
             };
 
-            data = [trace1, trace2, trace3, trace4];
+            //data = [trace1, trace2, trace3, trace4];
+            data = [trace3, trace4, trace1];
             if (firstPlots) {
                 firstPlots = false;
                 console.log(firstPlots)
