@@ -57,9 +57,14 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     var window_slider = window.parent.document.getElementById("slidingwindow_rng");
     var threshold_slider = window.parent.document.getElementById("threshold_rng");
 
+    var first_selection = window.parent.document.getElementById("selection1");
+    var first_ds = first_selection.options[first_selection.selectedIndex].value;
+    var second_selection = window.parent.document.getElementById("selection2");
+    var second_ds = second_selection.options[second_selection.selectedIndex].value;
 
     if(visIndex == 1) {
-        Plotly.d3.csv("./visualization/dollareuro.csv", function (err, rows) {
+        //Plotly.d3.csv("./visualization/eur_usd.csv", function (err, rows) {
+        Plotly.d3.csv("./visualization/" + first_ds + ".csv", function (err, rows) {
             function unpack(rows, key) {
                 return rows.map(function (row) {
                     return row[key];
@@ -252,7 +257,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         });
     }
     else{
-        Plotly.d3.csv("./visualization/DEXJPUS.csv", function (err, rows) {
+        //Plotly.d3.csv("./visualization/usd_yen.csv", function (err, rows) {
+        Plotly.d3.csv("./visualization/" + second_ds + ".csv", function (err, rows) {
             function unpack(rows, key) {
                 return rows.map(function (row) {
                     return row[key];

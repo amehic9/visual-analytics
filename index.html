@@ -44,13 +44,9 @@
 
 	</style>
 	<style>
-		.slidecontainer {
-			width: 100%;
-		}
-
 		.slider {
 			-webkit-appearance: none;
-			width: 100%;
+			width: 200px;
 			height: 25px;
 			background: #d3d3d3;
 			outline: none;
@@ -79,28 +75,65 @@
 			cursor: pointer;
 		}
 	</style>
+	<style>
+		#sliders {
+			width: 800px;
+			margin: 0 auto;
+		}
+		#sliders1    {
+			width: 200px;
+			height: 100px;
+			float: left;
+			margin-right: 20px;
+		}
+
+		#sliders2  {
+			width: 200px;
+			height: 100px;
+			float: left;
+		}
+	</style>
 	<script src="http://d3js.org/d3.v3.js"></script>
 </head>
 <body>
 <div id="control-buttons">
 	<button onClick="drawVisualization();drawSecondVisualization()">Draw Visualization</button>
-	<!--<button onClick="drawVisualization()">Draw Visualization</button>-->
-	<button onClick="fireRandomFilterEvent()">Fire Random Filter Event</button>
+	<!--<button onClick="fireRandomFilterEvent()">Fire Random Filter Event</button>
 	<button onClick="clearFilter()">Clear Filter</button>
 	<button onClick="fireRandomBrushEvent()">Fire Random Brush Event</button>
 	<button onClick="clearBrush()">Clear Brush</button>
 	<button onClick="drawSecondVisualization()">Draw Second Visualization</button>
-	<div id="size-container">width: <input id="vis-width" type="number"> height: <input id="vis-height" type="number">  <button onclick="setSize();">Set Size</button></div>
+	<div id="size-container">width: <input id="vis-width" type="number"> height: <input id="vis-height" type="number">  <button onclick="setSize();">Set Size</button></div>-->
+	First Dataset:
+	<select id="selection1">
+		<option value="eur_usd">EUR-USD</option>
+		<option value="usd_yen">USD-YEN</option>
+		<option value="cad_usd">CAD-USD</option>
+		<option value="chf_usd">CHF-USD</option>
+		<option value="cny_usd">CNY-USD</option>
+		<option value="gbp_usd">GBP-USD</option>
+	</select>
+
+	Second Dataset:
+	<select id="selection2">
+		<option value="chf_usd">CHF-USD</option>
+		<option value="eur_usd">EUR-USD</option>
+		<option value="usd_yen">USD-YEN</option>
+		<option value="cad_usd">CAD-USD</option>
+		<option value="cny_usd">CNY-USD</option>
+		<option value="gbp_usd">GBP-USD</option>
+	</select>
 </div>
 
-
-<div id="slidwindow">
-	<p>Size of Sliding Window: <span id="slid"></span></p>
-	<input type="range" min="1" max="100" value="25" id="slidingwindow_rng">
-</div>
-<div id="slidthresh">
-	<p>Threshold: <span id="thresh"></span></p>
-	<input type="range" min="1" max="100" value="5" id="threshold_rng">
+<div id="sliders">
+	<div id="sliders1">
+		<p>Size of Sliding Window: <span id="slid"></span></p>
+		<input type="range" min="1" max="100" value="25" id="slidingwindow_rng" class="slider">
+	</div>
+	<div id="sliders2">
+		<p>Threshold: <span id="thresh"></span></p>
+		<input type="range" min="1" max="100" value="5" id="threshold_rng" class="slider">
+	</div>
 </div>
 
 <div id="visualization-space">
