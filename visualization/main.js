@@ -53,191 +53,159 @@ applyFilter = function(interval) {
 //                          column is, etc.
 // @param visIndex - the index or ID of the visualization. Only needed for brushing
 drawVisualization = function (datarows, channelMappings, visIndex) {
-    /*REGISTRATION TO THE BRUSHING OBSERVER*/
-    /* DO NOT REMOVE */
-    /*setTimeout(function() {
-     console.log("hello");
-     }), 3000;*/
-    //console.log(datarows);
-
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
     var window_slider = window.parent.document.getElementById("slidingwindow_rng");
     var threshold_slider = window.parent.document.getElementById("threshold_rng");
 
-    Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
-        function unpack(rows, key) {
-            return rows.map(function(row) {
-                return row[key]; });
-        }
 
-        xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
-        yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
-
-        /*xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
-        yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
-        var x = datarows.map(function(d) {
-            tokens = d[xIndex].split("/");
-            return tokens[2] + "-" + tokens[0] + "-" + tokens[1]; });
-        var y = datarows.map(function(d) { return d[yIndex]; });*/
-
-        var margin = {
-            top: 20,
-            right: 20,
-            bottom: 30,
-            left: 50
-        };
-
-        getBollingerBands(window_slider.value, threshold_slider.value, rows);
-        //getBollingerBands(window_slider.value, threshold_slider.value, datarows);
-
-        var trace1 = {
-            type: "scatter",
-            mode: "lines",
-            name: 'exchange rate',
-            x: unpack(rows, 'date'),
-            y: unpack(rows, 'close'),
-            //x: x,
-            //y: y,
-            line: {color: '#17BECF'}
-        };
-
-        var trace2 = {
-            type: "scatter",
-            mode: "lines",
-            name: 'mean',
-            x: unpack(ma_band, 'date'),
-            y: unpack(ma_band, 'close'),
-            line: {color: 'red'}
-        };
-
-        var trace3 = {
-            type: "scatter",
-            mode: "lines",
-            name: 'low',
-            x: unpack(lo_band, 'date'),
-            y: unpack(lo_band, 'close'),
-            line: {color: 'blue'}
-        };
-
-        var trace4 = {
-            type: "scatter",
-            mode: "lines",
-            name: 'high',
-            x: unpack(hi_band, 'date'),
-            y: unpack(hi_band, 'close'),
-            line: {color: 'yellow'}
-        };
-
-        data = [trace1, trace2, trace3, trace4];
-        if(firstPlots){
-            console.log("asdlfaskjdflöajsdlf")
-            firstPlots = false;
-            if(visIndex == 1){
-                var elem1 = document.createElement('myDiv1');
-                elem1.setAttribute("id", "myDiv1");
-                document.body.appendChild(elem1);
-                var simple_layout = {
-                    title: 'Euro-dollar exchange rate',
-                    /*xaxis: {
-                        type: 'date'
-                    }*/
-                };
-                Plotly.newPlot('myDiv1', data, simple_layout);
-            }
-            else{
-                console.log(firstPlots)
-                var elem2 = document.createElement('myDiv2');
-                elem2.setAttribute("id", "myDiv2");
-                document.body.appendChild(elem2);
-                var fixed_layout = {
-                    title: 'Euro-dollar exchange rate',
-                    xaxis: {
-                        fixedrange: true,
-                        //type: 'date'
-                    },
-                    yaxis: {
-                        fixedrange: true
-                    }
-                 };
-                 Plotly.newPlot('myDiv2', data, fixed_layout);
+    if(visIndex == 1) {
+        Plotly.d3.csv("./visualization/dollareuro.csv", function (err, rows) {
+            function unpack(rows, key) {
+                return rows.map(function (row) {
+                    return row[key];
+                });
             }
 
-        }
-        else{
-            if(visIndex == 1){
-                Plotly.update('myDiv1', data, layout);
-            }
-            else{
-                //layout["xaxis"]["fixedrange"] = true;
-                Plotly.update('myDiv2', data, layout)
-            }
-        }
+            xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
+            yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
 
-        graphDiv = document.getElementById("myDiv1");
-        if(graphDiv){
-            graphDiv.on('plotly_relayout', function(eventData) {
-                console.log(eventData)
-                if(eventData["xaxis.autorange"]){
-                    console.log("doubleclick");
-                    layout = {
+            /*xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
+             yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
+             var x = datarows.map(function(d) {
+             tokens = d[xIndex].split("/");
+             return tokens[2] + "-" + tokens[0] + "-" + tokens[1]; });
+             var y = datarows.map(function(d) { return d[yIndex]; });*/
+
+            var margin = {
+                top: 20,
+                right: 20,
+                bottom: 30,
+                left: 50
+            };
+
+            getBollingerBands(window_slider.value, threshold_slider.value, rows);
+            //getBollingerBands(window_slider.value, threshold_slider.value, datarows);
+
+            var trace1 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'exchange rate',
+                x: unpack(rows, 'date'),
+                y: unpack(rows, 'close'),
+                //x: x,
+                //y: y,
+                line: {color: '#17BECF'}
+            };
+
+            var trace2 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'mean',
+                x: unpack(ma_band, 'date'),
+                y: unpack(ma_band, 'close'),
+                line: {color: 'red'}
+            };
+
+            var trace3 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'low',
+                x: unpack(lo_band, 'date'),
+                y: unpack(lo_band, 'close'),
+                line: {color: 'blue'}
+            };
+
+            var trace4 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'high',
+                x: unpack(hi_band, 'date'),
+                y: unpack(hi_band, 'close'),
+                line: {color: 'yellow'}
+            };
+
+            data = [trace1, trace2, trace3, trace4];
+            if (firstPlots) {
+                console.log("asdlfaskjdflöajsdlf")
+                firstPlots = false;
+                if (visIndex == 1) {
+                    var elem1 = document.createElement('myDiv1');
+                    elem1.setAttribute("id", "myDiv1");
+                    document.body.appendChild(elem1);
+                    var simple_layout = {
+                        title: 'Euro-dollar exchange rate',
+                        /*xaxis: {
+                         type: 'date'
+                         }*/
+                    };
+                    Plotly.newPlot('myDiv1', data, simple_layout);
+                }
+                else {
+                    console.log(firstPlots)
+                    var elem2 = document.createElement('myDiv2');
+                    elem2.setAttribute("id", "myDiv2");
+                    document.body.appendChild(elem2);
+                    var fixed_layout = {
+                        title: 'Euro-dollar exchange rate',
                         xaxis: {
-                            autorange: true,
                             fixedrange: true,
                             //type: 'date'
                         },
                         yaxis: {
-                            autorange: true,
                             fixedrange: true
                         }
                     };
-                    applyFilter(layout);
+                    Plotly.newPlot('myDiv2', data, fixed_layout);
                 }
-                else{
-                    var begin_t;
-                    var begin_v;
-                    var end_t;
-                    var end_v;
-                    console.log(eventData);
-                    if(eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']){
-                        console.log("select");
-                        begin_t = eventData['xaxis.range[0]'].split(" ")[0];
-                        end_t = eventData['xaxis.range[1]'].split(" ")[0];
 
-                        begin_v = eventData['yaxis.range[0]'];
-                        end_v = eventData['yaxis.range[1]'];
+            }
+            else {
+                if (visIndex == 1) {
+                    Plotly.update('myDiv1', data, layout);
+                }
+                else {
+                    Plotly.update('myDiv2', data, layout)
+                }
+            }
+
+            graphDiv = document.getElementById("myDiv1");
+            if (graphDiv) {
+                graphDiv.on('plotly_relayout', function (eventData) {
+                    console.log(eventData)
+                    if (eventData["xaxis.autorange"]) {
+                        console.log("doubleclick");
                         layout = {
                             xaxis: {
-                                range: [begin_t, end_t],
+                                autorange: true,
                                 fixedrange: true,
                                 //type: 'date'
                             },
                             yaxis: {
-                                range: [begin_v, end_v],
+                                autorange: true,
                                 fixedrange: true
                             }
                         };
                         applyFilter(layout);
                     }
-                    else{
-                        if(eventData['xaxis.range[0]'] && !eventData['yaxis.range[0]']){
-                            console.log("only x");
+                    else {
+                        var begin_t;
+                        var begin_v;
+                        var end_t;
+                        var end_v;
+                        console.log(eventData);
+                        if (eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']) {
+                            console.log("select");
                             begin_t = eventData['xaxis.range[0]'].split(" ")[0];
                             end_t = eventData['xaxis.range[1]'].split(" ")[0];
 
+                            begin_v = eventData['yaxis.range[0]'];
+                            end_v = eventData['yaxis.range[1]'];
                             layout = {
                                 xaxis: {
                                     range: [begin_t, end_t],
                                     fixedrange: true,
                                     //type: 'date'
-                                }
-                            };
-                            applyFilter(layout);
-                        }
-                        if(!eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']){
-                            console.log("only y");
-                            begin_v = eventData['yaxis.range[0]'];
-                            end_v = eventData['yaxis.range[1]'];
-                            layout = {
+                                },
                                 yaxis: {
                                     range: [begin_v, end_v],
                                     fixedrange: true
@@ -245,19 +213,132 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                             };
                             applyFilter(layout);
                         }
-                    }
+                        else {
+                            if (eventData['xaxis.range[0]'] && !eventData['yaxis.range[0]']) {
+                                console.log("only x");
+                                begin_t = eventData['xaxis.range[0]'].split(" ")[0];
+                                end_t = eventData['xaxis.range[1]'].split(" ")[0];
 
-                }
-            });
-        }
-    });
+                                layout = {
+                                    xaxis: {
+                                        range: [begin_t, end_t],
+                                        fixedrange: true,
+                                        //type: 'date'
+                                    }
+                                };
+                                applyFilter(layout);
+                            }
+                            if (!eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']) {
+                                console.log("only y");
+                                begin_v = eventData['yaxis.range[0]'];
+                                end_v = eventData['yaxis.range[1]'];
+                                layout = {
+                                    yaxis: {
+                                        range: [begin_v, end_v],
+                                        fixedrange: true
+                                    }
+                                };
+                                applyFilter(layout);
+                            }
+                        }
+
+                    }
+                });
+
+            }
+        });
+    }
+    else{
+        Plotly.d3.csv("./visualization/DEXJPUS.csv", function (err, rows) {
+            function unpack(rows, key) {
+                return rows.map(function (row) {
+                    return row[key];
+                });
+            }
+
+            xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
+            yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
+
+            var margin = {
+                top: 20,
+                right: 20,
+                bottom: 30,
+                left: 50
+            };
+
+            getBollingerBands(window_slider.value, threshold_slider.value, rows);
+
+            console.log(ma_band)
+            //getBollingerBands(window_slider.value, threshold_slider.value, datarows);
+
+            var trace1 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'exchange rate',
+                x: unpack(rows, 'date'),
+                y: unpack(rows, 'close'),
+                //x: x,
+                //y: y,
+                line: {color: '#17BECF'}
+            };
+
+            var trace2 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'mean',
+                x: unpack(ma_band, 'date'),
+                y: unpack(ma_band, 'close'),
+                line: {color: 'red'}
+            };
+
+            var trace3 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'low',
+                x: unpack(lo_band, 'date'),
+                y: unpack(lo_band, 'close'),
+                line: {color: 'blue'}
+            };
+
+            var trace4 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'high',
+                x: unpack(hi_band, 'date'),
+                y: unpack(hi_band, 'close'),
+                line: {color: 'yellow'}
+            };
+
+            data = [trace1, trace2, trace3, trace4];
+            if (firstPlots) {
+                firstPlots = false;
+                console.log(firstPlots)
+                var elem2 = document.createElement('myDiv2');
+                elem2.setAttribute("id", "myDiv2");
+                document.body.appendChild(elem2);
+                var fixed_layout = {
+                    title: 'Yen-Dollar exchange rate',
+                    xaxis: {
+                        fixedrange: true,
+                        //type: 'date'
+                    },
+                    yaxis: {
+                        fixedrange: true
+                    }
+                };
+                Plotly.newPlot('myDiv2', data, fixed_layout);
+            }
+            else {
+                Plotly.update('myDiv2', data, layout)
+            }
+        });
+    }
 };
 
 getBollingerBands = function(n, k, data) {
     ma_band = [];
     lo_band = [];
     hi_band = [];
-
     for (var i = n - 1, len = data.length; i < len; i++) {
         var slice = data.slice(i + 1 - n, i);
         var mean = d3.mean(slice, function (d) {
@@ -270,9 +351,6 @@ getBollingerBands = function(n, k, data) {
             return Math.pow(d.close - mean, 2);
 
         })));
-
-        //var tokens = data[i][0].split("/");
-        //var date = tokens[2] + "-" + tokens[0] + "-" + tokens[1];
         ma_band.push({
             //date: date,
             date: data[i].date,
