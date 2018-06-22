@@ -1,6 +1,7 @@
 var ma_band = [];
 var lo_band = [];
 var hi_band = [];
+var outliers = [];
 var data;
 var layout;
 var firstPlots = true;
@@ -57,17 +58,27 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     /*setTimeout(function() {
      console.log("hello");
      }), 3000;*/
+    //console.log(datarows);
+
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
     var window_slider = window.parent.document.getElementById("slidingwindow_rng");
     var threshold_slider = window.parent.document.getElementById("threshold_rng");
 
     Plotly.d3.csv("./visualization/dollareuro.csv", function(err, rows){
         function unpack(rows, key) {
-            return rows.map(function(row) { return row[key]; });
+            return rows.map(function(row) {
+                return row[key]; });
         }
 
         xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
         yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
+
+        /*xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
+        yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
+        var x = datarows.map(function(d) {
+            tokens = d[xIndex].split("/");
+            return tokens[2] + "-" + tokens[0] + "-" + tokens[1]; });
+        var y = datarows.map(function(d) { return d[yIndex]; });*/
 
         var margin = {
             top: 20,
@@ -77,6 +88,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         };
 
         getBollingerBands(window_slider.value, threshold_slider.value, rows);
+        //getBollingerBands(window_slider.value, threshold_slider.value, datarows);
 
         var trace1 = {
             type: "scatter",
@@ -84,6 +96,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             name: 'exchange rate',
             x: unpack(rows, 'date'),
             y: unpack(rows, 'close'),
+            //x: x,
+            //y: y,
             line: {color: '#17BECF'}
         };
 
@@ -116,13 +130,17 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
         data = [trace1, trace2, trace3, trace4];
         if(firstPlots){
-            console.log(firstPlots);
+            console.log("asdlfaskjdflöajsdlf")
+            firstPlots = false;
             if(visIndex == 1){
                 var elem1 = document.createElement('myDiv1');
                 elem1.setAttribute("id", "myDiv1");
                 document.body.appendChild(elem1);
                 var simple_layout = {
                     title: 'Euro-dollar exchange rate',
+                    /*xaxis: {
+                        type: 'date'
+                    }*/
                 };
                 Plotly.newPlot('myDiv1', data, simple_layout);
             }
@@ -134,7 +152,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 var fixed_layout = {
                     title: 'Euro-dollar exchange rate',
                     xaxis: {
-                        fixedrange: true
+                        fixedrange: true,
+                        //type: 'date'
                     },
                     yaxis: {
                         fixedrange: true
@@ -145,7 +164,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
         }
         else{
-            console.log(firstPlots);
             if(visIndex == 1){
                 Plotly.update('myDiv1', data, layout);
             }
@@ -164,7 +182,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                     layout = {
                         xaxis: {
                             autorange: true,
-                            fixedrange: true
+                            fixedrange: true,
+                            //type: 'date'
                         },
                         yaxis: {
                             autorange: true,
@@ -189,7 +208,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                         layout = {
                             xaxis: {
                                 range: [begin_t, end_t],
-                                fixedrange: true
+                                fixedrange: true,
+                                //type: 'date'
                             },
                             yaxis: {
                                 range: [begin_v, end_v],
@@ -207,7 +227,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                             layout = {
                                 xaxis: {
                                     range: [begin_t, end_t],
-                                    fixedrange: true
+                                    fixedrange: true,
+                                    //type: 'date'
                                 }
                             };
                             applyFilter(layout);
@@ -236,32 +257,53 @@ getBollingerBands = function(n, k, data) {
     ma_band = [];
     lo_band = [];
     hi_band = [];
+
     for (var i = n - 1, len = data.length; i < len; i++) {
         var slice = data.slice(i + 1 - n, i);
         var mean = d3.mean(slice, function (d) {
+            //return d[1];
             return d.close;
         });
 
         var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
+            //return Math.pow(d[1] - mean, 2);
             return Math.pow(d.close - mean, 2);
+
         })));
 
+        //var tokens = data[i][0].split("/");
+        //var date = tokens[2] + "-" + tokens[0] + "-" + tokens[1];
         ma_band.push({
+            //date: date,
             date: data[i].date,
             close: mean
         });
 
         lo_band.push({
+            //date: date,
             date: data[i].date,
             close: mean - (k * stdDev)
         });
 
 
         hi_band.push({
+            //date: date,
             date: data[i].date,
             close: mean + (k * stdDev)
         });
     }
+
+    outliers = [];
+    new_data = data.slice(n - 1, data.length);
+    for(var i = 0; i < new_data.length; i++) {
+        if(new_data[i].close < lo_band[i].close || new_data[i].close > hi_band.close){
+            console.log(new_data[i].close);
+            console.log(lo_band[i].close);
+            console.log(hi_band[i].close);
+            outliers.push(new_data[i])
+        }
+    }
+    console.log(outliers);
 };
 
 
