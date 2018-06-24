@@ -59,8 +59,10 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
     var first_selection = window.parent.document.getElementById("selection1");
     var first_ds = first_selection.options[first_selection.selectedIndex].value;
+    var first_title = String(first_ds).replace("_", "-").toUpperCase();
     var second_selection = window.parent.document.getElementById("selection2");
     var second_ds = second_selection.options[second_selection.selectedIndex].value;
+    var second_title = String(second_ds).replace("_", "-").toUpperCase();
 
     if(visIndex == 1) {
         //Plotly.d3.csv("./visualization/eur_usd.csv", function (err, rows) {
@@ -134,14 +136,13 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             //data = [trace1, trace2, trace3, trace4];
             data = [trace3, trace4, trace1];
             if (firstPlots) {
-                console.log("asdlfaskjdflöajsdlf")
                 firstPlots = false;
                 if (visIndex == 1) {
                     var elem1 = document.createElement('myDiv1');
                     elem1.setAttribute("id", "myDiv1");
                     document.body.appendChild(elem1);
                     var simple_layout = {
-                        title: 'Euro-dollar exchange rate',
+                        title: first_title + " exchange rate",
                         /*xaxis: {
                          type: 'date'
                          }*/
@@ -329,7 +330,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 elem2.setAttribute("id", "myDiv2");
                 document.body.appendChild(elem2);
                 var fixed_layout = {
-                    title: 'Yen-Dollar exchange rate',
+                    title: second_title + " exchange rate",
                     xaxis: {
                         fixedrange: true,
                         //type: 'date'
