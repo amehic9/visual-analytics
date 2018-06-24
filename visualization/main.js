@@ -67,11 +67,14 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     if(visIndex == 1) {
         //Plotly.d3.csv("./visualization/eur_usd.csv", function (err, rows) {
         Plotly.d3.csv("./visualization/" + first_ds + ".csv", function (err, rows) {
+            /*console.log("SPECTALEEEEE!!");
+            console.log(rows);*/
             function unpack(rows, key) {
                 return rows.map(function (row) {
                     return row[key];
                 });
             }
+            console.log(rows);
 
             xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
             yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
@@ -346,6 +349,21 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             }
         });
     }
+
+
+
+    
+          /*var data = [
+            {
+              z: [[1, 20, 30], [20, 1, 60], [30, 60, 1]],
+              type: 'heatmap'
+            }
+          ];
+          console.log("HEREEE");
+          var elem1 = document.createElement('myDiv3');
+          elem1.setAttribute("id", "myDiv3");
+          document.body.appendChild(elem1);
+          Plotly.plot(elem1, data);*/
 };
 
 getBollingerBands = function(n, k, data) {
@@ -403,3 +421,45 @@ getBollingerBands = function(n, k, data) {
 function brushUpdateCallback(data) {
     console.log("brushUpdateCallback");
 }
+
+function unpackk(rows, key) {
+    return rows.map(function (row) {
+        return row[key];
+    });
+}
+
+$( document ).ready(function() {
+    var fileInput = document.getElementById("fileSelect"),
+
+    readFile = function () {
+        var reader = new FileReader();
+        reader.onload = function () {
+            let date = [];
+            let close = [];
+            let dataa = $.csv.toArrays(reader.result);
+            for (let i = 1; i < dataa.length; i++) {
+                date.push(dataa[i][0]);
+                close.push(dataa[i][1]);
+            }
+            var trace1 = {
+                type: "scatter",
+                mode: "lines",
+                name: 'exchange rate',
+                x: date,
+                y: close,
+                line: {color: 'blue'}
+            };
+
+            let data = [trace1];
+            var elem1 = document.createElement('myDiv1');
+            elem1.setAttribute("id", "myDiv1");
+            document.body.appendChild(elem1);
+            Plotly.newPlot(elem1, data);
+            //document.getElementById('out').innerHTML = reader.result;
+        };
+        // start reading the file. When it is done, calls the onload event defined above.
+        reader.readAsBinaryString(fileInput.files[0]);
+    };
+
+    fileInput.addEventListener('change', readFile);
+});

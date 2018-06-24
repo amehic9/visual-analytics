@@ -10,8 +10,10 @@
 
 	<script type="text/javascript" src="./config.js"></script>
 	<script type="text/javascript" src="./data/data.js"></script>
+	<script type="text/javascript" src="./visualization/main.js"></script>
 	<script type="text/javascript" src="./js/script.js"></script>
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 	<style>
@@ -133,11 +135,15 @@
 	</div>
 </div>
 
-<div id="visualization-space">
+<div style="margin-left: 10px;" id="visualization-space">
 	<iframe style="width: 48% !important" id="visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
 	<iframe style="width: 48% !important" id="second-visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
 </div>
-<!-- <input id="fileSelect" type="file" accept=".csv" /> -->
+<p style="margin: 10px 0 0 10px">Select .csv and upload it:</p>
+<input style="margin-left: 10px;" id="fileSelect" type="file" accept=".csv" />
+
+
+
 <script src="http://d3js.org/d3.v3.js"></script>
 
 <script>
