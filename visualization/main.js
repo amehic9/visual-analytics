@@ -146,7 +146,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                          type: 'date'
                          }*/
                     };
-                    Plotly.newPlot('myDiv1', data, simple_layout);
+                    Plotly.newPlot('myDiv1', data, simple_layout, {displayModeBar: false});
                 }
                 else {
                     console.log(firstPlots)
@@ -163,7 +163,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                             fixedrange: true
                         }
                     };
-                    Plotly.newPlot('myDiv2', data, fixed_layout);
+                    Plotly.newPlot('myDiv2', data, fixed_layout, {displayModeBar: false});
                 }
 
             }
