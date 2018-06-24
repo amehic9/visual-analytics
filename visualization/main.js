@@ -428,10 +428,16 @@ function unpackk(rows, key) {
     });
 }
 
-$( document ).ready(function() {
+$(document).ready(function() {
+    console.log("READY");
     var fileInput = document.getElementById("fileSelect"),
 
     readFile = function () {
+        /*var elemm = $("#visualization-iframe html body mydiv1:first-child")[0];
+        if (elemm) {
+            console.log("DELETING");
+            Plotly.deleteTraces(elemm, 0);
+        }*/
         var reader = new FileReader();
         reader.onload = function () {
             let date = [];
@@ -453,9 +459,11 @@ $( document ).ready(function() {
             let data = [trace1];
             var elem1 = document.createElement('myDiv1');
             elem1.setAttribute("id", "myDiv1");
-            document.body.appendChild(elem1);
+            var body = $("#visualization-iframe").contents().find("body");
+            body.append(elem1);
             Plotly.newPlot(elem1, data);
-            //document.getElementById('out').innerHTML = reader.result;
+            var inputField = document.getElementById("fileSelect");
+            inputField.value = "";
         };
         // start reading the file. When it is done, calls the onload event defined above.
         reader.readAsBinaryString(fileInput.files[0]);
