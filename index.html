@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="./data/data.js"></script>
 	<script type="text/javascript" src="./js/script.js"></script>
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 	<style>
 		body {
@@ -76,10 +77,6 @@
 		}
 	</style>
 	<style>
-		#sliders {
-			width: 800px;
-			margin: 0 auto;
-		}
 		#sliders1    {
 			width: 200px;
 			height: 100px;
@@ -96,7 +93,7 @@
 	<script src="http://d3js.org/d3.v3.js"></script>
 </head>
 <body>
-<div id="control-buttons">
+<div id="control-buttons" class="text-center" style="margin: 20px 0">
 	<button onClick="drawVisualization();drawSecondVisualization()">Draw Visualization</button>
 	<!--<button onClick="fireRandomFilterEvent()">Fire Random Filter Event</button>
 	<button onClick="clearFilter()">Clear Filter</button>
@@ -125,7 +122,7 @@
 	</select>
 </div>
 
-<div id="sliders">
+<div id="sliders" class="row text-center" style="margin: 20px 20px">
 	<div id="sliders1">
 		<p>Size of Sliding Window: <span id="slid"></span></p>
 		<input type="range" min="1" max="100" value="25" id="slidingwindow_rng" class="slider">
@@ -137,10 +134,10 @@
 </div>
 
 <div id="visualization-space">
-	<iframe id="visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
-	<iframe id="second-visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+	<iframe style="width: 48% !important" id="visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
+	<iframe style="width: 48% !important" id="second-visualization-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
 </div>
-<input id="fileSelect" type="file" accept=".csv" />
+<!-- <input id="fileSelect" type="file" accept=".csv" /> -->
 <script src="http://d3js.org/d3.v3.js"></script>
 
 <script>
