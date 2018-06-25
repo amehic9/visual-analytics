@@ -36,8 +36,10 @@ applyFilter = function(interval) {
     // update the second plot at zoom/selection in the first plot
     console.log("applyCssToSvg");
 
+    // update second plot based on first one
     graphDiv = document.getElementById("myDiv1");
 
+    // update selection
     var frames = window.parent.frames;
     for (var i = 0; i < frames.length; i++) {
         if(frames[i].document.getElementById("myDiv2")){
@@ -46,6 +48,7 @@ applyFilter = function(interval) {
         }
     }
 
+    // update pixel based visualization
     var dates = [];
     var indicators = [];
     console.log(firstDsOutliers)
@@ -61,9 +64,6 @@ applyFilter = function(interval) {
             type: 'heatmap'
         }
     ];
-
-    /*var elem = window.parent.document.createElement('myDiv3');
-    elem.setAttribute("id", "myDiv3");
     window.parent.document.body.appendChild(elem);*/
     var heatmap_interval = {
         xaxis: interval.xaxis,
@@ -95,6 +95,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     var second_title = String(second_ds).replace("_", "-").toUpperCase();
 
     if(visIndex == 1) {
+        // create first visualization
         Plotly.d3.csv("./visualization/" + first_ds + ".csv", function (err, rows) {
             function unpack(rows, key) {
                 return rows.map(function (row) {
@@ -114,8 +115,8 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 left: 50
             };
 
+            // calculate the bollinger band
             firstDsOutliers = getBollingerBands(window_slider.value, threshold_slider.value, rows);
-            console.log(firstDsOutliers)
 
             // define lines for the plot
             var trace1 = {
@@ -124,9 +125,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 name: 'exchange rate',
                 x: unpack(rows, 'date'),
                 y: unpack(rows, 'close'),
-                //x: x,
-                //y: y,
-                //line: {color: '#17BECF'},
                 line: {color: 'red'}
             };
 
@@ -158,10 +156,11 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 fill:'tonexty'
             };
 
-            //data = [trace1, trace2, trace3, trace4];
+            // only use timeseries, upper-/lower border. No mean
             data = [trace3, trace4, trace1];
             if (firstPlots) {
                 // create new plots in the beginning
+                // create pixel based vis.
                 var dates = [];
                 var indicators = [];
                 firstDsOutliers.forEach(function (e) {
@@ -193,9 +192,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                     document.body.appendChild(elem1);
                     var simple_layout = {
                         title: first_title + " exchange rate",
-                        /*xaxis: {
-                         type: 'date'
-                         }*/
                     };
                     Plotly.newPlot('myDiv1', data, simple_layout, {displayModeBar: false});
                 }
@@ -208,7 +204,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                         title: 'Euro-dollar exchange rate',
                         xaxis: {
                             fixedrange: true,
-                            //type: 'date'
                         },
                         yaxis: {
                             fixedrange: true
@@ -231,14 +226,14 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             graphDiv = document.getElementById("myDiv1");
             if (graphDiv) {
                 graphDiv.on('plotly_relayout', function (eventData) {
-                    // handle operation on the first plot
+                    // handle events on the first plot
+                    // zoom out
                     if (eventData["xaxis.autorange"]) {
                         console.log("doubleclick");
                         layout = {
                             xaxis: {
                                 autorange: true,
-                                fixedrange: true,
-                                //type: 'date'
+                                fixedrange: true
                             },
                             yaxis: {
                                 autorange: true,
@@ -247,6 +242,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                         };
                         applyFilter(layout);
                     }
+                    // select and zoom
                     else {
                         var begin_t;
                         var begin_v;
@@ -262,8 +258,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                             layout = {
                                 xaxis: {
                                     range: [begin_t, end_t],
-                                    fixedrange: true,
-                                    //type: 'date'
+                                    fixedrange: true
                                 },
                                 yaxis: {
                                     range: [begin_v, end_v],
@@ -273,6 +268,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                             applyFilter(layout);
                         }
                         else {
+                            // select x-interval
                             if (eventData['xaxis.range[0]'] && !eventData['yaxis.range[0]']) {
                                 console.log("only x");
                                 begin_t = eventData['xaxis.range[0]'].split(" ")[0];
@@ -281,12 +277,12 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                                 layout = {
                                     xaxis: {
                                         range: [begin_t, end_t],
-                                        fixedrange: true,
-                                        //type: 'date'
+                                        fixedrange: true
                                     }
                                 };
                                 applyFilter(layout);
                             }
+                            // select y-interval
                             if (!eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']) {
                                 console.log("only y");
                                 begin_v = eventData['yaxis.range[0]'];
@@ -308,7 +304,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
         });
     }
     else{
-        //Plotly.d3.csv("./visualization/usd_yen.csv", function (err, rows) {
+        // create second visualization
         Plotly.d3.csv("./visualization/" + second_ds + ".csv", function (err, rows) {
             function unpack(rows, key) {
                 return rows.map(function (row) {
@@ -326,6 +322,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 left: 50
             };
 
+            // get bollinger band
             getBollingerBands(window_slider.value, threshold_slider.value, rows);
 
             var trace1 = {
@@ -334,9 +331,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 name: 'exchange rate',
                 x: unpack(rows, 'date'),
                 y: unpack(rows, 'close'),
-                //x: x,
-                //y: y,
-                //line: {color: '#17BECF'},
                 line: {color: 'red'}
             };
 
@@ -368,7 +362,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 fill:'tonexty'
             };
 
-            //data = [trace1, trace2, trace3, trace4];
+            // only timeseries, lower-/upper border. no mean
             data = [trace3, trace4, trace1];
             if (firstPlots) {
                 firstPlots = false;
@@ -378,8 +372,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 var fixed_layout = {
                     title: second_title + " exchange rate",
                     xaxis: {
-                        fixedrange: true,
-                        //type: 'date'
+                        fixedrange: true
                     },
                     yaxis: {
                         fixedrange: true
@@ -392,77 +385,46 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             }
         });
     }
-
-
-
-    
-          /*var data = [
-            {
-              z: [[1, 20, 30], [20, 1, 60], [30, 60, 1]],
-              type: 'heatmap'
-            }
-          ];
-          console.log("HEREEE");
-          var elem1 = document.createElement('myDiv3');
-          elem1.setAttribute("id", "myDiv3");
-          document.body.appendChild(elem1);
-          Plotly.plot(elem1, data);*/
-
 };
 
 getBollingerBands = function(n, k, data) {
     ma_band = [];
     lo_band = [];
     hi_band = [];
+    // calculate mean and lower-/upper border
     for (var i = n - 1, len = data.length; i < len; i++) {
         var slice = data.slice(i + 1 - n, i);
         var mean = d3.mean(slice, function (d) {
-            //return d[1];
             return d.close;
         });
 
         var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
-            //return Math.pow(d[1] - mean, 2);
             return Math.pow(d.close - mean, 2);
 
         })));
         ma_band.push({
-            //date: date,
             date: data[i].date,
             close: mean
         });
 
         lo_band.push({
-            //date: date,
             date: data[i].date,
             close: mean - (k * stdDev)
         });
 
 
         hi_band.push({
-            //date: date,
             date: data[i].date,
             close: mean + (k * stdDev)
         });
     }
 
+    // identify regions outside of bollinger band
     outliers = [];
     new_data = data.slice(n - 1, data.length);
     console.log(ma_band);
     console.log(new_data);
     for(var i = 0; i < new_data.length; i++) {
-        //outliers.push(Math.pow(new_data[i] - ma_band[i], 2));
-        /*var diff = Math.pow(Number(new_data[i].close) - Number(ma_band[i].close), 2);
-        outliers.push({
-            date: new_data[i].date,
-            diff: diff
-        });*/
-        /*if(new_data[i].close < lo_band[i].close || new_data[i].close > hi_band.close){
-            console.log(new_data[i].close);
-            console.log(lo_band[i].close);
-            console.log(hi_band[i].close);
-            outliers.push(new_data[i])
-        }*/
         if(Number(new_data[i].close) < Number(lo_band[i].close)){
             outliers.push({
                 date: new_data[i].date,
