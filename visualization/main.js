@@ -5,6 +5,7 @@ var outliers = [];
 var data;
 var layout;
 var firstPlots = true;
+var firstDsOutliers = [];
 
 // When clicking on Download Visualization this function is called to apply all additional
 // transformations on the svg before the visualization is downloaded
@@ -32,10 +33,10 @@ applyCssToSvg = function () {
 /* OVERWRITE */
 // @param filteredDatarows - the datarows which are already filtered
 applyFilter = function(interval) {
+    // update the second plot at zoom/selection in the first plot
     console.log("applyCssToSvg");
 
     graphDiv = document.getElementById("myDiv1");
-    console.log(graphDiv);
 
     var frames = window.parent.frames;
     for (var i = 0; i < frames.length; i++) {
@@ -44,6 +45,32 @@ applyFilter = function(interval) {
             Plotly.update(frames[i].document.getElementById("myDiv2"), data, interval)
         }
     }
+
+    var dates = [];
+    var indicators = [];
+    console.log(firstDsOutliers)
+    firstDsOutliers.forEach(function (e) {
+        dates.push(e.date);
+        indicators.push(e.indicator)
+    });
+    var d = [
+        {
+            z: [indicators],
+            x: dates,
+            y: [" "],
+            type: 'heatmap'
+        }
+    ];
+
+    /*var elem = window.parent.document.createElement('myDiv3');
+    elem.setAttribute("id", "myDiv3");
+    window.parent.document.body.appendChild(elem);*/
+    var heatmap_interval = {
+        xaxis: interval.xaxis,
+        yaxis: {
+            fixedrange: true
+    }};
+    Plotly.update(window.parent.document.getElementById("myDiv3"), d, heatmap_interval);
 };
 
 // method for drawing the visualization
@@ -54,9 +81,12 @@ applyFilter = function(interval) {
 // @param visIndex - the index or ID of the visualization. Only needed for brushing
 drawVisualization = function (datarows, channelMappings, visIndex) {
     brushingObserver.registerListener(visIndex, brushUpdateCallback);
+
+    // get values of the slider for the size of the sliding window and the threshold
     var window_slider = window.parent.document.getElementById("slidingwindow_rng");
     var threshold_slider = window.parent.document.getElementById("threshold_rng");
 
+    // select exchange rates to be compared
     var first_selection = window.parent.document.getElementById("selection1");
     var first_ds = first_selection.options[first_selection.selectedIndex].value;
     var first_title = String(first_ds).replace("_", "-").toUpperCase();
@@ -65,26 +95,17 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
     var second_title = String(second_ds).replace("_", "-").toUpperCase();
 
     if(visIndex == 1) {
-        //Plotly.d3.csv("./visualization/eur_usd.csv", function (err, rows) {
         Plotly.d3.csv("./visualization/" + first_ds + ".csv", function (err, rows) {
-            /*console.log("SPECTALEEEEE!!");
-            console.log(rows);*/
             function unpack(rows, key) {
                 return rows.map(function (row) {
                     return row[key];
                 });
             }
-            console.log(rows);
 
             xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
             yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
 
-            /*xIndex = channelMappings.findIndex(elem => (elem.channel === "x-axis"));
-             yIndex = channelMappings.findIndex(elem => (elem.channel === "y-axis"));
-             var x = datarows.map(function(d) {
-             tokens = d[xIndex].split("/");
-             return tokens[2] + "-" + tokens[0] + "-" + tokens[1]; });
-             var y = datarows.map(function(d) { return d[yIndex]; });*/
+            var y = datarows.map(function(d) { return d[yIndex]; });
 
             var margin = {
                 top: 20,
@@ -93,9 +114,10 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                 left: 50
             };
 
-            getBollingerBands(window_slider.value, threshold_slider.value, rows);
-            //getBollingerBands(window_slider.value, threshold_slider.value, datarows);
+            firstDsOutliers = getBollingerBands(window_slider.value, threshold_slider.value, rows);
+            console.log(firstDsOutliers)
 
+            // define lines for the plot
             var trace1 = {
                 type: "scatter",
                 mode: "lines",
@@ -139,6 +161,31 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             //data = [trace1, trace2, trace3, trace4];
             data = [trace3, trace4, trace1];
             if (firstPlots) {
+                // create new plots in the beginning
+                var dates = [];
+                var indicators = [];
+                firstDsOutliers.forEach(function (e) {
+                    dates.push(e.date);
+                    indicators.push(e.indicator)
+                });
+                var heatmap_data = [
+                    {
+                        z: [indicators],
+                        x: dates,
+                        y: [" "],
+                        type: 'heatmap'
+                    }
+                ];
+                var heatmap_layout = {
+                    xaxis: { fixedrange: true },
+                    yaxis: { fixedrange: true }
+                };
+
+                var elem = window.parent.document.createElement('myDiv3');
+                elem.setAttribute("id", "myDiv3");
+                window.parent.document.body.appendChild(elem);
+                Plotly.newPlot(window.parent.document.getElementById("myDiv3"), heatmap_data, heatmap_layout);
+
                 firstPlots = false;
                 if (visIndex == 1) {
                     var elem1 = document.createElement('myDiv1');
@@ -153,7 +200,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                     Plotly.newPlot('myDiv1', data, simple_layout, {displayModeBar: false});
                 }
                 else {
-                    console.log(firstPlots)
+                    // disable operations in the second iframe
                     var elem2 = document.createElement('myDiv2');
                     elem2.setAttribute("id", "myDiv2");
                     document.body.appendChild(elem2);
@@ -172,6 +219,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
             }
             else {
+                // update plots
                 if (visIndex == 1) {
                     Plotly.update('myDiv1', data, layout);
                 }
@@ -183,7 +231,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             graphDiv = document.getElementById("myDiv1");
             if (graphDiv) {
                 graphDiv.on('plotly_relayout', function (eventData) {
-                    console.log(eventData)
+                    // handle operation on the first plot
                     if (eventData["xaxis.autorange"]) {
                         console.log("doubleclick");
                         layout = {
@@ -204,7 +252,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
                         var begin_v;
                         var end_t;
                         var end_v;
-                        console.log(eventData);
                         if (eventData['xaxis.range[0]'] && eventData['yaxis.range[0]']) {
                             console.log("select");
                             begin_t = eventData['xaxis.range[0]'].split(" ")[0];
@@ -281,9 +328,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
 
             getBollingerBands(window_slider.value, threshold_slider.value, rows);
 
-            console.log(ma_band)
-            //getBollingerBands(window_slider.value, threshold_slider.value, datarows);
-
             var trace1 = {
                 type: "scatter",
                 mode: "lines",
@@ -328,7 +372,6 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
             data = [trace3, trace4, trace1];
             if (firstPlots) {
                 firstPlots = false;
-                console.log(firstPlots)
                 var elem2 = document.createElement('myDiv2');
                 elem2.setAttribute("id", "myDiv2");
                 document.body.appendChild(elem2);
@@ -364,6 +407,7 @@ drawVisualization = function (datarows, channelMappings, visIndex) {
           elem1.setAttribute("id", "myDiv3");
           document.body.appendChild(elem1);
           Plotly.plot(elem1, data);*/
+
 };
 
 getBollingerBands = function(n, k, data) {
@@ -404,15 +448,41 @@ getBollingerBands = function(n, k, data) {
 
     outliers = [];
     new_data = data.slice(n - 1, data.length);
+    console.log(ma_band);
+    console.log(new_data);
     for(var i = 0; i < new_data.length; i++) {
-        if(new_data[i].close < lo_band[i].close || new_data[i].close > hi_band.close){
+        //outliers.push(Math.pow(new_data[i] - ma_band[i], 2));
+        /*var diff = Math.pow(Number(new_data[i].close) - Number(ma_band[i].close), 2);
+        outliers.push({
+            date: new_data[i].date,
+            diff: diff
+        });*/
+        /*if(new_data[i].close < lo_band[i].close || new_data[i].close > hi_band.close){
             console.log(new_data[i].close);
             console.log(lo_band[i].close);
             console.log(hi_band[i].close);
             outliers.push(new_data[i])
+        }*/
+        if(Number(new_data[i].close) < Number(lo_band[i].close)){
+            outliers.push({
+                date: new_data[i].date,
+                indicator: 1
+            })
+        }
+        if(Number(new_data[i].close) > Number(hi_band[i].close)){
+            outliers.push({
+                date: new_data[i].date,
+                indicator: 1
+            })
+        }
+        else{
+            outliers.push({
+                date: new_data[i].date,
+                indicator: 0
+            })
         }
     }
-    console.log(outliers);
+    return outliers;
 };
 
 
